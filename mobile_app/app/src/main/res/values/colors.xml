@@ -19,33 +19,18 @@
     <color name="textColor">#000000</color>
     <color name="textColorSecondary">#757575</color>
     <color name="textColorInverse">#FFFFFF</color>
-    <color name="gray_light">#757575 </color>
+    <color name="gray_light">#757575</color>
 
     <!-- Card colors -->
     <color name="cardBackgroundColor">#F5F5F5</color>
-
     <color name="cardTextColor">#000000</color>
 
     <!-- Other colors -->
     <color name="errorColor">#B00020</color>
     <color name="overlayColor">#80000000</color>
-
-
     <color name="controlColor">#FF4081</color> <!-- For switch and button controls -->
     <color name="accentColor">#FF9800</color>  <!-- Accent color for emphasis -->
-
-
-    <!-- ... your existing colors ... -->
-    <color name="primary">#1976D2</color>
-    <color name="header_background">@color/purple_light</color>
-    <color name="header_text">#000000</color>
-    <color name="text_primary">#212121</color>
-    <color name="row_even">#FFFFFF</color>
-    <color name="row_odd">#F5F5F5</color>
-    <color name="purple_strong">#4f378b</color>
-    <color name="purple_light">#CDB8FA</color>
-
-
+    <color name="warningColor">#FFB300</color> <!-- For warning messages and icons -->
 
     <!-- Dark Mode Background Colors -->
     <color name="dark_background_charcoal">#2C2C2C</color>
@@ -65,6 +50,9 @@
     <color name="secondary_text_light_gray">#B0B0B0</color>
     <color name="secondary_text_dark_gray">#757575</color>
 
-
-
+    <!-- Additional Colors for Dark Mode -->
+    <color name="dark_cardBackgroundColor">#2A2D2F</color>
+    <color name="dark_cardTextColor">#F5F5F5</color>
+    <color name="dark_textColor">#E0E0E0</color>
+    <color name="dark_textColorSecondary">#B0B0B0</color>
 </resources>

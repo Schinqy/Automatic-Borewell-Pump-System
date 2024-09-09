@@ -1,10 +1,10 @@
 <resources>
 
-    <style name="smidsToolbar" parent="Widget.MaterialComponents.Toolbar.Primary">
-        <item name="titleTextAppearance">@style/smidsToolbarTitleText</item>
+    <style name="abopsToolbar" parent="Widget.MaterialComponents.Toolbar.Primary">
+        <item name="titleTextAppearance">@style/abopsToolbarTitleText</item>
     </style>
 
-    <style name="smidsToolbarTitleText"
+    <style name="abopsToolbarTitleText"
         parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
         <item name="android:fontFamily">@font/poppins_bold</item>
         <item name="android:textColor">#FFFFFF</item>

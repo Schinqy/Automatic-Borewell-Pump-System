@@ -33,478 +33,327 @@
                 android:background="@color/dark_background_charcoal"
                 app:title="Automatic Borewell Monitor "
                 app:titleTextColor="@color/white"
-                app:titleTextAppearance="@style/smidsToolbarTitleText"/>
-            <!--                    app:navigationIcon="@drawable/ic_sidebar_menu"-->
-            <!--                    app:menu="@menu/top_app_bar_menu"-->
-
+                app:titleTextAppearance="@style/abopsToolbarTitleText"/>
 
         </com.google.android.material.appbar.AppBarLayout>
 
+    <!-- Device Status Card -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/deviceStatusCard"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/appBarLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="4dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="2dp"
+        app:cardBackgroundColor="@color/dark_background_onyx"
+        app:cardUseCompatPadding="true">
 
+        <!-- Content inside CardView -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="10dp">
 
-        <!-- Device Status Card -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/deviceStatusIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_offline"
+                    android:layout_marginEnd="3dp"
+                    android:contentDescription="Online status icon"/>
+
+                <TextView
+                    android:id="@+id/deviceStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Device Status: Unknown"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/poppins_bold"
+                    android:textColor="@color/white"/>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/deviceId"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="PUMP_ID0001"
+                android:textSize="12sp"
+                android:fontFamily="@font/poppins_regular"
+                android:textColor="@color/white"
+                android:layout_marginTop="8dp" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Pump Control Card with Override Control -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/pumpControlLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/deviceStatusCard"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:padding="16dp">
+
+        <!-- Override Control -->
+        <LinearLayout
+            android:id="@+id/overrideControl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/switchOverride"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Override Control"
+                android:textColor="@color/white"
+                android:thumbTint="@color/controlColor"
+                android:trackTint="@color/controlColor"
+                android:fontFamily="@font/poppins_bold"
+                android:textSize="12sp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:scaleX="1.3"
+                android:scaleY="1.3" />
+        </LinearLayout>
+        <!-- Pump Control Card -->
         <androidx.cardview.widget.CardView
-            android:id="@+id/deviceStatusCard"
+            android:id="@+id/pumpControlCard"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/appBarLayout"
+            app:layout_constraintTop_toBottomOf="@id/overrideControl"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_margin="4dp"
+            android:layout_marginTop="16dp"
             app:cardCornerRadius="8dp"
             app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/dark_background_onyx"
-            app:cardUseCompatPadding="true">
+            app:cardBackgroundColor="@color/dark_background_onyx">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="10dp">
+                android:padding="10dp"
+                android:gravity="center">
 
-                <LinearLayout
+                <ImageView
+                    android:id="@+id/iconPumpControl"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-
-                    >
-
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:id="@+id/deviceStatusIcon"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_offline"
-                        android:layout_marginEnd="3dp"
-                        android:contentDescription="Online status icon"/>
-
-                    <TextView
-                        android:id="@+id/deviceStatus"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Device Status: Unknown"
-                        android:textSize="14sp"
-                        android:fontFamily="@font/poppins_bold"
-                        android:textColor="@color/white"/>
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/deviceId"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="PUMP_ID0001"
-                    android:textSize="12sp"
-                    android:fontFamily="@font/poppins_regular"
-                    android:textColor="@color/white"
-                    android:layout_marginTop="8dp" />
-
-            </LinearLayout>
-
-        </androidx.cardview.widget.CardView>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/controlCard"
-            app:layout_constraintTop_toBottomOf="@id/deviceStatusCard"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:padding="16dp">
-
-            <!-- Override Control -->
-            <LinearLayout
-                android:id="@+id/overrideControl"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="2dp"
-                android:gravity="center_horizontal"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
+                    android:src="@drawable/ic_pump_filled"
+                android:contentDescription="Icon of a pump"
+                android:layout_gravity="center_horizontal"
+                    android:layout_marginTop ="6dp"
+                android:layout_marginBottom="0dp"/>
 
                 <com.google.android.material.switchmaterial.SwitchMaterial
-                    android:id="@+id/switchOverride"
+                    android:id="@+id/switchPumpControl"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Override Control"
+                    android:text="Pump   "
                     android:textColor="@color/white"
                     android:thumbTint="@color/controlColor"
                     android:trackTint="@color/controlColor"
                     android:fontFamily="@font/poppins_bold"
                     android:textSize="12sp"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
-                    android:scaleX="1.3"
-                    android:scaleY="1.3" />
+                    android:paddingStart="1dp"
+                    android:paddingEnd="1dp"
+                    android:layout_gravity="center_horizontal"/>
             </LinearLayout>
+        </androidx.cardview.widget.CardView>
 
-            <!-- Alarm Card -->
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Status Container -->
+    <LinearLayout
+        android:id="@+id/statusContainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@id/pumpControlLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="16dp">
+
+        <!-- Status Linear Layout -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:id="@+id/statusLinearLayout">
+
+            <!-- Flow Rate Card -->
             <androidx.cardview.widget.CardView
-                android:id="@+id/alarmCard"
+                android:id="@+id/flowRateCard"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/overrideControl"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/tearGasCard"
-                app:layout_constraintWidth_percent="0.48"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:focusable="true"
                 android:layout_marginEnd="8dp"
                 app:cardCornerRadius="8dp"
-                app:cardElevation="2dp"
+                app:cardElevation="4dp"
                 app:cardBackgroundColor="@color/dark_background_onyx">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="16dp"
+                    android:gravity="center">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_water_tap"
+                        android:layout_gravity="center"
+                        android:contentDescription="Flow Rate Icon"
+                        app:tint="@color/white"
+                        />
+
+                    <TextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical">
+                        android:text="Flow Rate"
+                        android:textColor="@color/white"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/poppins_bold"
+                        android:gravity="center"
+                        android:layout_marginTop="8dp"/>
 
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_marginEnd="8dp"
-                            android:contentDescription="Alarm icon"
-                            android:src="@drawable/ic_alarm2" />
-
-                        <com.google.android.material.switchmaterial.SwitchMaterial
-                            android:id="@+id/switchAlarm"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Alarm"
-                            android:textColor="@color/white"
-                            android:thumbTint="@color/controlColor"
-                            android:trackTint="@color/controlColor"
-                            android:textSize="14sp"
-                            android:fontFamily="@font/poppins_regular"
-                            android:paddingStart="14dp"
-                            android:paddingEnd="14dp"
-                            android:scaleX="1.1"
-                            android:scaleY="1.1" />
-                    </LinearLayout>
-
+                    <TextView
+                        android:id="@+id/flowRate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0.0 L/s"
+                        android:textColor="@color/white"
+                        android:textSize="14sp"
+                        android:fontFamily="@font/poppins_regular"
+                        android:gravity="center"
+                        android:layout_marginTop="8dp"/>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- Tear Gas Card -->
+            <!-- Water Level Card -->
             <androidx.cardview.widget.CardView
-                android:id="@+id/tearGasCard"
+                android:id="@+id/waterLevelCard"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/overrideControl"
-                app:layout_constraintStart_toEndOf="@id/alarmCard"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintWidth_percent="0.48"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:focusable="true"
                 android:layout_marginStart="8dp"
                 app:cardCornerRadius="8dp"
-                app:cardElevation="2dp"
+                app:cardElevation="4dp"
                 app:cardBackgroundColor="@color/dark_background_onyx">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="16dp"
+                    android:gravity="center">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_water"
+                        android:layout_gravity="center"
+                        android:contentDescription="Water Level Icon"
+                        app:tint="@color/white" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical">
+                        android:text="Water Level"
+                        android:textColor="@color/white"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/poppins_bold"
+                        android:gravity="center"
+                        android:layout_marginTop="8dp"/>
 
-                        <ImageView
-                            android:layout_width="28dp"
-                            android:layout_height="28dp"
-                            android:layout_marginEnd="8dp"
-                            android:contentDescription="Tear gas icon"
-                            android:src="@drawable/ic_deadly_spray" />
-
-                        <com.google.android.material.switchmaterial.SwitchMaterial
-                            android:id="@+id/switchTearGas"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Gas "
-                            android:textColor="@color/white"
-                            android:thumbTint="@color/controlColor"
-                            android:trackTint="@color/black"
-                            android:fontFamily="@font/poppins_regular"
-                            android:textSize="14sp"
-                            android:paddingStart="14dp"
-                            android:paddingEnd="14dp"
-                            android:scaleX="1.1"
-                            android:scaleY="1.1" />
-                    </LinearLayout>
-
+                    <TextView
+                        android:id="@+id/waterLevel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0.00 L"
+                        android:textColor="@color/white"
+                        android:textSize="14sp"
+                        android:fontFamily="@font/poppins_regular"
+                        android:gravity="center"
+                        android:layout_marginTop="8dp"/>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
+        </LinearLayout>
+    </LinearLayout>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-
+    <!-- Intrusion Alert Card -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/alertCard"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/statusContainer"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="2dp"
+        app:cardBackgroundColor="@color/dark_background_onyx">
 
         <LinearLayout
-            android:id="@+id/statusContainer"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintTop_toBottomOf="@id/controlCard"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_margin="16dp">
+            android:padding="16dp">
 
             <TextView
-                android:id="@+id/location"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Location: Unknown"
+                android:text="Alert"
                 android:textSize="16sp"
-                android:fontFamily="@font/poppins_regular"
-                android:textColor="@color/textColor"
-                android:linksClickable="true"
-                android:autoLink="web"
-                android:layout_marginBottom="16dp"/>
+                android:fontFamily="@font/poppins_bold"
+                android:textColor="@color/white"
+                android:layout_marginBottom="8dp"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:id="@+id/statusLinearLayout">
+                android:gravity="center">
 
-                <!-- Reed Status Card -->
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/reedCard"
-                    android:layout_width="0dp"
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/alertStatusIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_alarm2"
+                    android:contentDescription="Alert Icon"
+                    android:tint="@color/warningColor"
+                    android:layout_marginEnd="8dp"/>
+
+                <TextView
+                    android:id="@+id/intrusionStatus"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:layout_marginEnd="8dp"
-                    app:cardCornerRadius="8dp"
-                    app:cardElevation="4dp"
-                    app:cardBackgroundColor="@color/white">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="16dp"
-                        android:gravity="center">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:src="@drawable/ic_manhole_cover"
-                            android:contentDescription="Reed icon"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:fontFamily="@font/poppins_bold"
-                            android:text="Cover"
-                            android:textColor="@color/textColor"
-                            android:textSize="14sp" />
-
-                        <TextView
-                            android:id="@+id/reedStatus"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Unknown"
-                            android:textSize="12sp"
-                            android:fontFamily="@font/poppins_regular"
-                            android:textColor="@color/textColor"
-                            android:layout_marginTop="4dp"/>
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
-
-                <!-- Water Level Card -->
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/waterCard"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginHorizontal="4dp"
-                    app:cardCornerRadius="8dp"
-                    app:cardElevation="4dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    app:cardBackgroundColor="@color/white">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="16dp"
-                        android:gravity="center">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:src="@drawable/ic_water"
-                            android:contentDescription="Water level icon"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Water"
-                            android:textSize="14sp"
-                            android:fontFamily="@font/poppins_bold"
-                            android:textColor="@color/textColor"
-                            android:layout_marginTop="8dp"/>
-
-                        <TextView
-                            android:id="@+id/waterLevelStatus"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Unknown"
-                            android:textSize="12sp"
-                            android:fontFamily="@font/poppins_regular"
-                            android:textColor="@color/textColor"
-                            android:layout_marginTop="4dp"/>
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
-
-                <!-- Motion Status Card -->
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/motionCard"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="8dp"
-                    app:cardCornerRadius="8dp"
-                    app:cardElevation="4dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:background="@drawable/card_ripple"
-                    app:cardBackgroundColor="@color/white">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="16dp"
-                        android:gravity="center">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:src="@drawable/ic_dancing_party_filled"
-                            android:contentDescription="Motion icon"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Motion"
-                            android:textSize="14sp"
-                            android:fontFamily="@font/poppins_bold"
-                            android:textColor="@color/textColor"
-                            android:layout_marginTop="8dp"/>
-
-                        <TextView
-                            android:id="@+id/motionStatus"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Unknown"
-                            android:textSize="12sp"
-                            android:fontFamily="@font/poppins_regular"
-                            android:textColor="@color/textColor"
-                            android:layout_marginTop="4dp"/>
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
+                    android:text="All Clear"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/poppins_regular"
+                    android:textColor="@color/white"/>
             </LinearLayout>
         </LinearLayout>
+    </androidx.cardview.widget.CardView>
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:padding="16dp"
-            app:layout_constraintTop_toBottomOf="@id/statusContainer"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:id="@+id/AlertButtonConstraint">
-
-            <!-- Intrusion Alert Card -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/intrusionAlertCard"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/btnShowGraphs"
-                android:layout_marginBottom="16dp"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="4dp"
-                app:cardBackgroundColor="@color/white">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:id="@+id/intrusionAlert"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Intrusion Alerts"
-                        android:textSize="16sp"
-                        android:fontFamily="@font/poppins_regular"
-                        android:textColor="@color/textColor"
-                        android:textStyle="bold" />
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/recyclerViewNotifications"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:layout_marginTop="8dp" />
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <!-- Button to Show Alerts -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnShowAlerts"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="Alerts"
-                android:visibility="gone"
-                android:textColor="@color/white"
-                android:backgroundTint="@color/black"
-                android:padding="12dp"
-                android:layout_margin="16dp"
-                app:cornerRadius="24dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/btnShowGraphs"
-                style="@style/Widget.MaterialComponents.Button" />
-
-            <!-- Button to Show Manholes-->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnShowGraphs"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="Manhole List"
-                android:textColor="@color/white"
-                android:backgroundTint="@color/black"
-                android:padding="12dp"
-                android:layout_margin="16dp"
-                app:cornerRadius="24dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/btnShowAlerts"
-                app:layout_constraintEnd_toEndOf="parent"
-                style="@style/Widget.MaterialComponents.Button" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-</androidx.drawerlayout.widget.DrawerLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.drawerlayout.widget.DrawerLayout>
