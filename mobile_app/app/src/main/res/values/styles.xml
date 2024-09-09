@@ -1,0 +1,13 @@
+<resources>
+
+    <style name="smidsToolbar" parent="Widget.MaterialComponents.Toolbar.Primary">
+        <item name="titleTextAppearance">@style/smidsToolbarTitleText</item>
+    </style>
+
+    <style name="smidsToolbarTitleText"
+        parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:fontFamily">@font/poppins_bold</item>
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+</resources>
