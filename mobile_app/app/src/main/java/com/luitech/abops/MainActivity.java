@@ -2,6 +2,7 @@ package com.luitech.abops;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.widget.ImageSwitcher;
 import android.widget.TextView;
 
@@ -38,6 +39,9 @@ public class MainActivity extends AppCompatActivity {
     private DeviceStatusChecker statusChecker;
     private TextView deviceStatusTextView;
     private AppCompatImageView deviceStatusIcon;
+    private Handler handler;
+    private Runnable updateTask;
+    private String device_id = "ABOPS_ID0001";
 
 
     @Override
@@ -54,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
         deviceStatusIcon =  findViewById(R.id.deviceStatusIcon);
 
 
+
         flowRateCardView.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, GraphActivity.class);
             intent.putExtra("graph_type", "flow");
@@ -66,7 +71,16 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
         statusChecker = new DeviceStatusChecker(); // Initialize statusChecker
-
+        handler = new Handler();
+        updateTask = new Runnable() {
+            @Override
+            public void run() {
+                fetchData(device_id);
+                //fetchNotifications();
+                handler.postDelayed(this, 5000); // Update every 5 seconds
+            }
+        };
+        handler.post(updateTask);
 
 
 
@@ -124,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
 
                                 if (latestData != null) {
                                     String waterLevel = latestData.optString("water_level");
-                                    String flowRate = latestData.optString("reed_status");
+                                    String flowRate = latestData.optString("flow_rate");
                                     String timestamp = latestData.optString("timestamp");
 
 
