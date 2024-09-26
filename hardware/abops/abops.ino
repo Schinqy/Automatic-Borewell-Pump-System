@@ -4,6 +4,7 @@
 #include <HTTPClient.h>
 #include <WiFiClient.h>
 #include <NewPing.h>
+#include <Arduino_JSON.h>
 
 // Pin Definitions
 byte triggerPin = 18;
@@ -47,6 +48,7 @@ bool leakStatus = false;
 unsigned long timerDelay = 5000;
 unsigned long previousMillis = 0;
 int interval = 1000;
+unsigned long currentMillis = 0;  // Current time in milliseconds
 
 NewPing sonar(triggerPin, echoPin, maxDistance);
 
