@@ -64,9 +64,9 @@ public class GraphActivity extends AppCompatActivity {
         // Create a LineDataSet and set its properties
         LineDataSet lineDataSet = new LineDataSet(entries, "Example Data");
         lineDataSet.setColor(ColorTemplate.COLORFUL_COLORS[0]); // Color for the line
-        lineDataSet.setValueTextColor(getResources().getColor(R.color.black)); // Text color for values
+        lineDataSet.setValueTextColor(getResources().getColor(R.color.white)); // Text color for values
         lineDataSet.setLineWidth(2f); // Line width
-        lineDataSet.setCircleColor(getResources().getColor(R.color.black)); // Circle color for data points
+        lineDataSet.setCircleColor(getResources().getColor(R.color.white)); // Circle color for data points
         lineDataSet.setCircleRadius(5f); // Circle radius
         lineDataSet.setDrawValues(true); // Show values above points
 

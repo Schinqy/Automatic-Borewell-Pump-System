@@ -1,82 +1,83 @@
 #include <SPI.h>
 #include <Wire.h>
-#include <HCSR04.h>
-#include <math.h>
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include <WiFiClient.h>
-#include <Arduino_JSON.h>
+#include <NewPing.h>
 
 // Pin Definitions
-byte triggerPin = 14;
-byte echoPin = 13;
-byte pumpPin = 12; // Pin to control the pump
-byte buzzerPin = 15; // Pin for the buzzer
-byte sensorPin = 2; // Flow sensor pin
+byte triggerPin = 18;
+byte echoPin = 19;
+byte pumpPin = 22;
+byte buzzerPin = 23;
+byte sensorPin = 21;
+byte LED = 27;
 
-// Constants
-const char* ssid = "WaterMgmnt";
-const char* password = "passc0d6";
-const char* serverName = "http://146.190.22.58/api/system-data";
+// Flow sensor variables
+volatile int pulseCount = 0;
+const float calibrationFactor = 4.5;
+unsigned long lastTimeFlow = 0;
+float flowRate = 0;
+float totalLiters = 0; // Not sending totalLiters
 
-const float tankVolume = 5000.0; // Volume of the tank in liters
-const float minWaterLevel = 500.0; // Minimum water level to turn on the pump (in liters)
-const float leakThreshold = 0.1; // Allowable discrepancy in liters per minute for leak detection
+// WiFi credentials
+const char* ssid = "Sch! Phone";
+const char* password = "passc0d9";
+const char* serverName = "http://lui.co.zw/abops/post.php";
+// API endpoints
+const char* postAPI = "http://lui.co.zw/abops/post.php";
+const char* ctrlAPI = "http://lui.co.zw/abops/ctrl.php?board=ABOPS_ID0001";
+const char* notifyAPI = "http://lui.co.zw/abops/sendNotification.php";
+const char* auto_hwAPI = "http://lui.co.zw/abops/auto_hw.php"; 
+String apiKey = "tPmAT5Ab3j7F9";
+String boardId = "ABOPS_ID0001";
+
+const float tankVolume = 5000.0;
+const float minWaterLevel = 500.0;
+const float leakThreshold = 0.1;
+
+// Ultrasonic sensor parameters
+const float maxDistance = 200.0;
 
 // Global Variables
 float waterLevel;
 float waterHeight;
-float inflowRate = 0.0;
-float outflowRate = 0.0;
-float volumeDispensed = 0.0;
+bool leakStatus = false; 
 
-unsigned long lastTime = 0;
-unsigned long timerDelay = 5000; // 5 seconds
-unsigned long pumpDelay = 10000; // Pump delay to turn it on/off every 10 seconds
+unsigned long timerDelay = 5000;
+unsigned long previousMillis = 0;
+int interval = 1000;
 
-long currentMillis = 0;
-long previousMillis = 0;
-int interval = 1000; // Update interval for flow rate
-volatile byte pulseCount = 0;
-float flowRate;
-unsigned long flowMilliLitres;
-unsigned int totalMilliLitres;
-float flowLitres;
-float totalLitres;
+NewPing sonar(triggerPin, echoPin, maxDistance);
 
-// Function Prototypes
-void ICACHE_RAM_ATTR pulseCounter();
-void setup();
-void loop();
-void getVolume();
-void getFlow();
-void postData();
+void IRAM_ATTR pulseCounter();
+void checkSensors();
+void autoCtrl();
+void postData(float waterLevel, float flowRate);
+void postNotification(float waterLevel, float flowRate);
 void controlPump();
-void checkLeak();
 void soundBuzzer();
+void checkLeak();
+void calculateFlow();
+void getVolume();
 
-void ICACHE_RAM_ATTR pulseCounter() {
+void IRAM_ATTR pulseCounter() {
   pulseCount++;
 }
 
 void setup() {
-  Serial.begin(9600);
-  HCSR04.begin(triggerPin, echoPin);
-
+  Serial.begin(115200);
   pinMode(sensorPin, INPUT_PULLUP);
   pinMode(pumpPin, OUTPUT);
   pinMode(buzzerPin, OUTPUT);
-  digitalWrite(pumpPin, LOW); // Ensure the pump is off initially
-  digitalWrite(buzzerPin, LOW); // Ensure the buzzer is off initially
+  pinMode(LED, OUTPUT);
+  digitalWrite(pumpPin, LOW);
+  digitalWrite(buzzerPin, LOW);
 
-  pulseCount = 0;
-  flowRate = 0.0;
-  flowMilliLitres = 0;
-  totalMilliLitres = 0;
-  previousMillis = 0;
+  attachInterrupt(digitalPinToInterrupt(sensorPin), pulseCounter, FALLING);
+  lastTimeFlow = millis();
 
-  attachInterrupt(digitalPinToInterrupt(sensorPin), pulseCounter, RISING);
-
+  // Connect to WiFi
   WiFi.begin(ssid, password);
   Serial.println("Connecting to WiFi...");
   while (WiFi.status() != WL_CONNECTED) {
@@ -86,135 +87,48 @@ void setup() {
   Serial.println("");
   Serial.print("Connected to WiFi network with IP Address: ");
   Serial.println(WiFi.localIP());
-
-  Serial.println("Setup complete. Timer set to 5 seconds.");
 }
 
 void loop() {
-  digitalWrite(LED, HIGH);
+  checkSensors();
 
-  getFlow(); // Calculate flow rate
-  float previousWaterLevel = waterLevel;
-  getVolume(); // Calculate volume of water in tank
+  if (currentMillis - previousMillis >= interval) {
+        if (httpAutoStatus() == "1") {
+          Serial.println("AUTO MODE DISABLED");
+            appCtrl();
+         
+        } else if (httpAutoStatus() == "0") {
+          Serial.println("AUTO MODE ENABLED");
+            autoCtrl();
+        } else {
+            // OFFLINE DO SOMETHING
+            Serial.println(F("OFFLINE: AUTO MODE ON"));
+            autoCtrl();
+        }
 
-  checkLeak(previousWaterLevel, waterLevel); // Check for leaks
+          // Send sensor data
+    postData(waterLevel, flowRate);
 
-  if (waterLevel < 0) {
-    Serial.println("Sensor Not Working");
-  } else {
-    postData(); // Post data to the server
-    controlPump(); // Control pump based on water level
-  }
+    // Send notification
+    postNotification(waterLevel, flowRate);
 
-  delay(500); // Short delay for stability
-}
-
-void getVolume() {
-  float ht = 150.0; // Total height of the tank in cm
-
-  double* distances = HCSR04.measureDistanceCm();
-  float d = *distances;
-  
-  Serial.print("Distance: ");
-  Serial.print(d);
-  Serial.println(" cm");
-  
-  waterHeight = ht - d; // Calculate water height
-  waterLevel = (tankVolume * waterHeight) / ht; // Calculate volume in liters
-
-  Serial.print("Water Volume: ");
-  Serial.print(waterLevel);
-  Serial.println(" L");
-}
-
-void getFlow() {
-  currentMillis = millis();
-  if (currentMillis - previousMillis > interval) {
-    pulseCount = 0;
-    flowRate = ((1000.0 / (millis() - previousMillis)) * pulseCount) / calibrationFactor;
-    previousMillis = millis();
-
-    flowMilliLitres = (flowRate / 60) * 1000;
-    flowLitres = (flowRate / 60);
-
-    totalMilliLitres += flowMilliLitres;
-    totalLitres += flowLitres;
-
-    Serial.print("Flow rate: ");
-    Serial.print(flowRate);
-    Serial.print(" L/min\t");
-
-    Serial.print("Total Quantity: ");
-    Serial.print(totalMilliLitres);
-    Serial.print(" mL / ");
-    Serial.print(totalLitres);
-    Serial.println(" L");
-
-    inflowRate = flowRate; // Update inflow rate
-  }
-}
-
-void postData() {
-  if ((millis() - lastTime) > timerDelay) {
-    if (WiFi.status() == WL_CONNECTED) {
-      WiFiClient client;
-      HTTPClient http;
-
-      http.begin(client, serverName);
-      http.addHeader("Content-Type", "application/json");
-
-      String payload = "{\"water_level\":" + String(waterLevel) + ",\"flow_rate\":" + String(flowRate) + "}";
-      Serial.println(payload);
-
-      int httpResponseCode = http.POST(payload);
-
-      Serial.print("HTTP Response code: ");
-      Serial.println(httpResponseCode);
-
-      if (httpResponseCode == 200) {
-        digitalWrite(LED, HIGH);
-        delay(300);
-        digitalWrite(LED, LOW);
-      } else {
-        digitalWrite(LED, HIGH);
-        delay(800);
-        digitalWrite(LED, LOW);
-      }
-
-      String responsePayload = http.getString();
-      Serial.println(responsePayload);
-
-      http.end();
-    } else {
-      Serial.println("WiFi Disconnected");
+        // Update previousMillis to the current time
+        previousMillis = currentMillis;
     }
-    lastTime = millis();
-  }
 }
 
-void controlPump() {
-  if (waterLevel < minWaterLevel) {
-    digitalWrite(pumpPin, HIGH); // Turn on the pump
-  } else {
-    digitalWrite(pumpPin, LOW); // Turn off the pump
-  }
+void checkSensors() {
+  calculateFlow();  // Calculate flow rate
+  getVolume();      // Calculate water volume
+  checkLeak();      // Check for leakage
 }
 
-void checkLeak(float previousVolume, float currentVolume) {
-  volumeDispensed = totalLitres; // Total volume dispensed by the flow rate sensor
 
-  // Calculate expected volume change
-  float expectedVolumeChange = previousVolume - currentVolume;
 
-  // Detect leak if the actual change in volume is greater than expected by the threshold
-  if (abs(expectedVolumeChange - volumeDispensed) > leakThreshold) {
-    Serial.println("Leak Detected!");
-    soundBuzzer();
-  }
-}
 
-void soundBuzzer() {
-  digitalWrite(buzzerPin, HIGH);
-  delay(1000); // Buzzer on for 1 second
-  digitalWrite(buzzerPin, LOW);
-}
+
+
+
+
+
+
