@@ -21,9 +21,9 @@ void getVolume() {
   waterHeight = ht - d;
   waterLevel = (tankVolume * waterHeight) / ht;
 
-  Serial.print("Water Volume: ");
-  Serial.print(waterLevel);
-  Serial.println(" L");
+  // Serial.print("Water Volume: ");
+  // Serial.print(waterLevel);
+  // Serial.println(" L");
 }
 
 

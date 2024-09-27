@@ -16,7 +16,7 @@ byte LED = 27;
 
 // Flow sensor variables
 volatile int pulseCount = 0;
-const float calibrationFactor = 4.5;
+const float calibrationFactor = 7.5;
 unsigned long lastTimeFlow = 0;
 float flowRate = 0;
 float totalLiters = 0; // Not sending totalLiters
@@ -47,8 +47,8 @@ bool leakStatus = false;
 
 unsigned long timerDelay = 5000;
 unsigned long previousMillis = 0;
-int interval = 1000;
-unsigned long currentMillis = 0;  // Current time in milliseconds
+int interval = 5000;
+
 
 NewPing sonar(triggerPin, echoPin, maxDistance);
 
@@ -93,6 +93,7 @@ void setup() {
 
 void loop() {
   checkSensors();
+      unsigned long currentMillis = millis();
 
   if (currentMillis - previousMillis >= interval) {
         if (httpAutoStatus() == "1") {
@@ -122,7 +123,7 @@ void loop() {
 void checkSensors() {
   calculateFlow();  // Calculate flow rate
   getVolume();      // Calculate water volume
-  checkLeak();      // Check for leakage
+ // checkLeak();      // Check for leakage
 }
 
 
