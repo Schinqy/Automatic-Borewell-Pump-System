@@ -20,10 +20,13 @@ void getVolume() {
   
   waterHeight = ht - d;
   waterLevel = (tankVolume * waterHeight) / ht;
+  if(waterLevel <0) waterLevel = 0;
+  if(waterLevel>tankVolume) waterLevel = tankVolume;
 
-  // Serial.print("Water Volume: ");
-  // Serial.print(waterLevel);
-  // Serial.println(" L");
+  Serial.print("Water Volume: ");
+  Serial.print(waterLevel);
+  Serial.println(" L");
+  delay(20);
 }
 
 
