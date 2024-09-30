@@ -165,7 +165,7 @@
                 android:id="@+id/btnShowGraphs"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="SHOW ALL GRAPHS JUXTAPOSED"
+                android:text="SHOW TABLE"
                 android:textColor="@color/white"
                 android:backgroundTint="@color/black"
                 android:padding="12dp"

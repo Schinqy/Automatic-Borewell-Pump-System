@@ -1,4 +1,6 @@
 // Graphs populate APP
+// Set Intervals
+
 // Notification send HW
 // Alerts APP
 // Buzzer HW
