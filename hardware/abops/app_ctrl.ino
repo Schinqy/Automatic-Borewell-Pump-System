@@ -28,6 +28,7 @@ void appCtrl() {
     // Convert the key to an integer (GPIO pin) and set it to the value
     int gpioPin = atoi(pinKey);
     int gpioState = atoi(pinValue);
+    gpioState = gpioState? 0 : 1;
     pinMode(gpioPin, OUTPUT);
     digitalWrite(gpioPin, gpioState);
   }

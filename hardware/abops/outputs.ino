@@ -1,8 +1,8 @@
 void controlPump() {
   if (waterLevel < minWaterLevel) {
-    digitalWrite(pumpPin, HIGH);
-  } else {
     digitalWrite(pumpPin, LOW);
+  } else {
+    digitalWrite(pumpPin, HIGH);
   }
 }
 

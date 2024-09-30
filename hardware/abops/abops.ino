@@ -73,7 +73,7 @@ void setup() {
   pinMode(pumpPin, OUTPUT);
   pinMode(buzzerPin, OUTPUT);
   pinMode(LED, OUTPUT);
-  digitalWrite(pumpPin, LOW);
+  digitalWrite(pumpPin, HIGH);
   digitalWrite(buzzerPin, LOW);
 
   attachInterrupt(digitalPinToInterrupt(sensorPin), pulseCounter, FALLING);
