@@ -138,7 +138,6 @@ public class GraphActivity extends AppCompatActivity {
                             JSONArray dataArray = jsonObject.optJSONArray("data");
                             if (dataArray != null && dataArray.length() > 0) {
                                 ArrayList<Entry> graphEntries = new ArrayList<>();
-                                xAxisLabels = new ArrayList<>(); // Initialize X-axis labels
                                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 
                                 for (int i = 0; i < dataArray.length(); i++) {
@@ -150,7 +149,6 @@ public class GraphActivity extends AppCompatActivity {
                                         Date date = dateFormat.parse(timestampStr);
                                         if (date != null) {
                                             timestamp = date.getTime();
-                                            xAxisLabels.add(new SimpleDateFormat("MMM dd, HH:mm", Locale.getDefault()).format(date)); // Add formatted date label
                                         } else {
                                             continue;
                                         }
@@ -166,10 +164,11 @@ public class GraphActivity extends AppCompatActivity {
                                         value = (float) data.optDouble("flow_rate", 0);
                                     }
 
-                                    graphEntries.add(new Entry(i, value)); // X-value is the index, Y-value is the sensor value
+                                    graphEntries.add(new Entry(timestamp, value));
                                 }
 
                                 populateGraph(graphEntries);
+                                lineChart.invalidate();  // This refreshes the chart every 5 seconds
                             } else {
                                 deviceStatusTextView.setText("No data found.");
                             }
@@ -191,4 +190,5 @@ public class GraphActivity extends AppCompatActivity {
             }
         });
     }
+
 }
