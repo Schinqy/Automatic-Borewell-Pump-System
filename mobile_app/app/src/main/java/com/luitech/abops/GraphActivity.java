@@ -1,8 +1,12 @@
 package com.luitech.abops;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -21,6 +25,7 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.button.MaterialButton;
 import com.luitech.abops.network.ApiClient;
 import com.luitech.abops.network.DataInterface;
 
@@ -30,6 +35,7 @@ import org.json.JSONObject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -48,19 +54,31 @@ public class GraphActivity extends AppCompatActivity {
     private TextView deviceStatusTextView;
     private AppCompatImageView deviceStatusIcon;
     private TextView deviceId;
-    private ArrayList<String> xAxisLabels; // To hold formatted datetime labels
+    private ArrayList<String> xAxisLabels;
+    private Spinner spinnerInterval;
+    private MaterialButton btnSetInterval;
+    private MaterialButton btnDisplayTable;
+    private SharedPreferences sharedPreferences;
+    private static final String PREF_NAME = "GraphPreferences";
+    private static final String PREF_INTERVAL = "SelectedInterval";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_graph);
+
         lineChart = findViewById(R.id.lineChart);
         MaterialToolbar toolbar = findViewById(R.id.toolbar);
+        spinnerInterval = findViewById(R.id.spinnerInterval);
+        btnSetInterval = findViewById(R.id.btnSetInterval);
+        btnDisplayTable = findViewById(R.id.btnShowTable);
+
+        sharedPreferences = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
+
         Intent intent = getIntent();
         graph_type = intent.getStringExtra("graph_type");
 
-        // Set title based on graph_type
         if ("water".equals(graph_type)) {
             toolbar.setTitle("Water Level vs Time");
         } else {
@@ -73,8 +91,43 @@ public class GraphActivity extends AppCompatActivity {
             return insets;
         });
 
-        statusChecker = new DeviceStatusChecker(); // Initialize statusChecker
+        statusChecker = new DeviceStatusChecker();
         handler = new Handler();
+
+        // Set up the spinner
+        int savedInterval = sharedPreferences.getInt(PREF_INTERVAL, 0);
+        spinnerInterval.setSelection(savedInterval);
+
+        spinnerInterval.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                // Do nothing here, we'll update when the button is clicked
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Do nothing
+            }
+        });
+
+        btnSetInterval.setOnClickListener(v -> {
+            int selectedInterval = spinnerInterval.getSelectedItemPosition();
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putInt(PREF_INTERVAL, selectedInterval);
+            editor.apply();
+
+            // Restart the data fetching with new interval
+            handler.removeCallbacks(updateTask);
+            handler.post(updateTask);
+        });
+
+
+        btnDisplayTable.setOnClickListener(v -> {
+            Intent intentX = new Intent(GraphActivity.this, WaterUsageActivity.class);
+            startActivity(intentX);
+        });
+
+
         updateTask = new Runnable() {
             @Override
             public void run() {
@@ -120,7 +173,6 @@ public class GraphActivity extends AppCompatActivity {
         lineChart.invalidate(); // Refresh the chart
     }
 
-    // Fetch data and format datetime for the X-axis
     private void fetchData(String manholeId) {
         DataInterface dataInterface = ApiClient.getDataInterface();
         Call<ResponseBody> call = dataInterface.getData(manholeId);
@@ -137,35 +189,60 @@ public class GraphActivity extends AppCompatActivity {
                             JSONArray dataArray = jsonObject.optJSONArray("data");
                             if (dataArray != null && dataArray.length() > 0) {
                                 ArrayList<Entry> graphEntries = new ArrayList<>();
-                                xAxisLabels = new ArrayList<>(); // Initialize X-axis labels
+                                xAxisLabels = new ArrayList<>();
                                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+
+                                int intervalPosition = sharedPreferences.getInt(PREF_INTERVAL, 0);
+                                Calendar calendar = Calendar.getInstance();
+                                calendar.set(Calendar.SECOND, 0);
+                                calendar.set(Calendar.MILLISECOND, 0);
+
+                                switch (intervalPosition) {
+                                    case 0: // Last Hour
+                                        calendar.add(Calendar.HOUR, -1);
+                                        break;
+                                    case 1: // Today
+                                        calendar.set(Calendar.HOUR_OF_DAY, 0);
+                                        calendar.set(Calendar.MINUTE, 0);
+                                        break;
+                                    case 2: // Current Week
+                                        calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
+                                        calendar.set(Calendar.HOUR_OF_DAY, 0);
+                                        calendar.set(Calendar.MINUTE, 0);
+                                        break;
+                                    case 3: // Current Month
+                                        calendar.set(Calendar.DAY_OF_MONTH, 1);
+                                        calendar.set(Calendar.HOUR_OF_DAY, 0);
+                                        calendar.set(Calendar.MINUTE, 0);
+                                        break;
+                                    case 4: // This Year
+                                        calendar.set(Calendar.DAY_OF_YEAR, 1);
+                                        calendar.set(Calendar.HOUR_OF_DAY, 0);
+                                        calendar.set(Calendar.MINUTE, 0);
+                                        break;
+                                    case 5: // All
+                                        calendar.setTimeInMillis(0);
+                                        break;
+                                }
+
+                                Date startDate = calendar.getTime();
 
                                 for (int i = 0; i < dataArray.length(); i++) {
                                     JSONObject data = dataArray.getJSONObject(i);
                                     String timestampStr = data.optString("timestamp");
 
-                                    long timestamp;
-                                    try {
-                                        Date date = dateFormat.parse(timestampStr);
-                                        if (date != null) {
-                                            timestamp = date.getTime();
-                                            xAxisLabels.add(new SimpleDateFormat("MMM dd, HH:mm", Locale.getDefault()).format(date)); // Add formatted date label
+                                    Date date = dateFormat.parse(timestampStr);
+                                    if (date != null && date.after(startDate)) {
+                                        float value;
+                                        if ("water".equals(graph_type)) {
+                                            value = (float) data.optDouble("water_level", 0);
                                         } else {
-                                            continue;
+                                            value = (float) data.optDouble("flow_rate", 0);
                                         }
-                                    } catch (ParseException e) {
-                                        e.printStackTrace();
-                                        continue;
-                                    }
 
-                                    float value;
-                                    if ("water".equals(graph_type)) {
-                                        value = (float) data.optDouble("water_level", 0);
-                                    } else {
-                                        value = (float) data.optDouble("flow_rate", 0);
+                                        graphEntries.add(new Entry(graphEntries.size(), value));
+                                        xAxisLabels.add(new SimpleDateFormat("MMM dd, HH:mm", Locale.getDefault()).format(date));
                                     }
-
-                                    graphEntries.add(new Entry(i, value)); // X-value is the index, Y-value is the sensor value
                                 }
 
                                 populateGraph(graphEntries);
@@ -191,3 +268,5 @@ public class GraphActivity extends AppCompatActivity {
         });
     }
 }
+
+

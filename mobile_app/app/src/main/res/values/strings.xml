@@ -2,17 +2,14 @@
     <string name="app_name">abops</string>
 
 
-
-        <string-array name="graph_intervals">
-            <item>Last Hour</item>
-            <item>Today</item>
-            <item>Current Week</item>
-            <item>Current Month</item>
-            <item>This Year</item>
-            <item>All</item>
-        </string-array>
-
-
+    <string-array name="graph_intervals">
+        <item>Last Hour</item>
+        <item>Today</item>
+        <item>Current Week</item>
+        <item>Current Month</item>
+        <item>This Year</item>
+        <item>All</item>
+    </string-array>
 
 
 </resources>
