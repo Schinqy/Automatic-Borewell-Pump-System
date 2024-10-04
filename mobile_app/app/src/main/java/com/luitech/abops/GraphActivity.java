@@ -188,9 +188,9 @@ public class GraphActivity extends AppCompatActivity {
         lineChart.invalidate(); // Refresh the chart
     }
 
-    private void fetchData(String manholeId) {
+    private void fetchData(String deviceId) {
         DataInterface dataInterface = ApiClient.getDataInterface();
-        Call<ResponseBody> call = dataInterface.getData(manholeId);
+        Call<ResponseBody> call = dataInterface.getData(deviceId);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {

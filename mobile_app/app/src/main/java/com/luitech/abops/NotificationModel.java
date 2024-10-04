@@ -1,21 +1,26 @@
 package com.luitech.abops;
 
-
 public class NotificationModel {
-    private String board_id; // Corresponds to 'board_id'
-    private String text; // Corresponds to 'message'
-    private String timestamp;
+    private long id; // Unique identifier for each notification
+    private String boardId; // Example field
+    private String text; // Example field
+    private String timestamp; // Example field
 
     // Constructor
-    public NotificationModel(String board_id, String text, String timestamp) {
-        this.board_id = board_id;
+    public NotificationModel(long id, String boardId, String text, String timestamp) {
+        this.id = id;
+        this.boardId = boardId;
         this.text = text;
         this.timestamp = timestamp;
     }
 
     // Getters
+    public long getId() {
+        return id;
+    }
+
     public String getBoardId() {
-        return board_id;
+        return boardId;
     }
 
     public String getText() {
@@ -24,5 +29,19 @@ public class NotificationModel {
 
     public String getTimestamp() {
         return timestamp;
+    }
+
+    // Optionally override equals() and hashCode() for comparison in DiffUtil
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        NotificationModel that = (NotificationModel) obj;
+        return id == that.id; // Compare IDs
+    }
+
+    @Override
+    public int hashCode() {
+        return Long.hashCode(id); // Generate hash code based on ID
     }
 }

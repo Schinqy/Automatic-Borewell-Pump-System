@@ -118,12 +118,20 @@ public class MainActivity extends AppCompatActivity {
         updateTask = new Runnable() {
             @Override
             public void run() {
-                fetchData(device_id);
-                fetchNotifications();
-                handler.postDelayed(this, 5000); // Update every 5 seconds
+                fetchData(device_id); // Fetch data based on device_id
+
+                // Fetch new notifications
+                fetchNotifications(); // This will automatically update the adapter
+
+                // Schedule the next update after 5 seconds
+                handler.postDelayed(this, 5000);
             }
         };
+
+// Start the periodic updates
         handler.post(updateTask);
+
+
 
 
         controlSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -367,13 +375,12 @@ public class MainActivity extends AppCompatActivity {
                     for (NotificationModel notification : notifications) {
                         Log.d("Notification", "Heading: " + notification.getBoardId() + ", Message: " + notification.getText() + ", Timestamp: " + notification.getTimestamp());
                     }
-                    adapter = new NotificationAdapter(notifications);
-                    recyclerView.setAdapter(adapter);
+                    // Update the existing adapter instead of creating a new one
+                    adapter.updateNotifications(notifications);
                 } else {
                     Log.e("NotificationsActivity", "Error fetching notifications: " + response.message());
                 }
             }
-
 
             @Override
             public void onFailure(Call<List<NotificationModel>> call, Throwable t) {
@@ -381,6 +388,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
 
 
 }
