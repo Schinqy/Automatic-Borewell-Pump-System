@@ -56,7 +56,7 @@ public class GraphActivity extends AppCompatActivity {
     private TextView deviceId;
     private ArrayList<String> xAxisLabels;
     private Spinner spinnerInterval;
-    private MaterialButton btnSetInterval;
+    private MaterialButton btnWaterUsage;
     private MaterialButton btnDisplayTable;
     private SharedPreferences sharedPreferences;
     private static final String PREF_NAME = "GraphPreferences";
@@ -71,7 +71,7 @@ public class GraphActivity extends AppCompatActivity {
         lineChart = findViewById(R.id.lineChart);
         MaterialToolbar toolbar = findViewById(R.id.toolbar);
         spinnerInterval = findViewById(R.id.spinnerInterval);
-        btnSetInterval = findViewById(R.id.btnSetInterval);
+        btnWaterUsage = findViewById(R.id.btnWaterUsage);
         btnDisplayTable = findViewById(R.id.btnShowTable);
 
         sharedPreferences = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
@@ -80,9 +80,9 @@ public class GraphActivity extends AppCompatActivity {
         graph_type = intent.getStringExtra("graph_type");
 
         if ("water".equals(graph_type)) {
-            toolbar.setTitle("Water Level vs Time");
+            toolbar.setTitle("Water Level Graph");
         } else {
-            toolbar.setTitle("Flow Rate vs Time");
+            toolbar.setTitle("Flow Rate Graph");
         }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -101,30 +101,43 @@ public class GraphActivity extends AppCompatActivity {
         spinnerInterval.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                // Do nothing here, we'll update when the button is clicked
+                // Save the selected interval to SharedPreferences
+                int selectedInterval = position;
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putInt(PREF_INTERVAL, selectedInterval);
+                editor.apply();
+
+                // Restart the data fetching with the new interval
+                handler.removeCallbacks(updateTask);
+                handler.post(updateTask);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                // Do nothing
+                // Do nothing when no item is selected
             }
         });
 
-        btnSetInterval.setOnClickListener(v -> {
+
+/*
+       btnSetInterval.setOnClickListener(v -> {
             int selectedInterval = spinnerInterval.getSelectedItemPosition();
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putInt(PREF_INTERVAL, selectedInterval);
             editor.apply();
 
             // Restart the data fetching with new interval
-            handler.removeCallbacks(updateTask);
-            handler.post(updateTask);
+          handler.removeCallbacks(updateTask);
+           handler.post(updateTask);
         });
-
-
-        btnDisplayTable.setOnClickListener(v -> {
+*/
+        btnWaterUsage.setOnClickListener(v -> {
             Intent intentX = new Intent(GraphActivity.this, WaterUsageActivity.class);
             startActivity(intentX);
+        });
+
+        btnDisplayTable.setOnClickListener(v -> {
+           
         });
 
 

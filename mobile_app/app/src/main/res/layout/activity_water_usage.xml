@@ -77,7 +77,7 @@
                     android:id="@+id/deviceId"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="PUMP_ID0001"
+                    android:text="ABOPS_ID0001"
                     android:textSize="12sp"
                     android:fontFamily="@font/poppins_regular"
                     android:textColor="@color/white"

@@ -112,10 +112,10 @@
 
             <!-- Action Button -->
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnSetInterval"
+                android:id="@+id/btnWaterUsage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Set Interval"
+                android:text="Water Usage"
                 android:textColor="@color/white"
                 android:backgroundTint="@color/black"
                 android:padding="12dp"

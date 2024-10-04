@@ -49,9 +49,9 @@ public class WaterUsageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_water_usage);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Water Usage");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        setSupportActionBar(toolbar);
+//        getSupportActionBar().setTitle("Water Usage");
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         barChart = findViewById(R.id.barChart);
         waterUsageTextView = findViewById(R.id.waterUsageTextView);
