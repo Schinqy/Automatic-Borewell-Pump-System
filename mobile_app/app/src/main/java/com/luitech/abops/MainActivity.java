@@ -16,14 +16,18 @@ import androidx.cardview.widget.CardView;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.angads25.toggle.widget.LabeledSwitch;
 import com.google.android.material.switchmaterial.SwitchMaterial;
+import com.luitech.abops.adapters.NotificationAdapter;
 import com.luitech.abops.network.ApiClient;
 import com.luitech.abops.network.ControlInterface;
 import com.luitech.abops.network.DataInterface;
 import com.luitech.abops.network.GetStateInterface;
 import com.luitech.abops.network.GpioInterface;
+import com.luitech.abops.network.NotificationsInterface;
 import com.luitech.abops.utils.ConfigUtils;
 
 import org.json.JSONArray;
@@ -33,7 +37,9 @@ import java.io.IOException;
 import java.text.BreakIterator;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import okhttp3.ResponseBody;
@@ -59,6 +65,9 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean overrideState = false;
 
+    private RecyclerView recyclerView;
+    private NotificationAdapter adapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +85,20 @@ public class MainActivity extends AppCompatActivity {
         controlSwitch = findViewById(R.id.switchOverride); //override Switch
         pumpSwitch = findViewById(R.id.switchPump);
 
+        // Initialize RecyclerView and Adapter
+        recyclerView = findViewById(R.id.recyclerViewAlerts);
+
+
+        if (recyclerView != null) {
+            recyclerView.setLayoutManager(new LinearLayoutManager(this));
+            List<NotificationModel> notificationList = new ArrayList<>();
+            adapter = new NotificationAdapter(notificationList);
+            recyclerView.setAdapter(adapter);
+        } else {
+            Log.e("MainActivity", "RecyclerView is null. Check the ID in the XML layout.");
+        }
+
+        fetchNotifications(); // Load notifications from API
 
 
 
@@ -96,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 fetchData(device_id);
-                //fetchNotifications();
+                fetchNotifications();
                 handler.postDelayed(this, 5000); // Update every 5 seconds
             }
         };
@@ -221,9 +244,10 @@ public class MainActivity extends AppCompatActivity {
                                     String waterLevel = latestData.optString("water_level");
                                     String flowRate = latestData.optString("flow_rate");
                                     String timestamp = latestData.optString("timestamp");
+                                   float waterLevelPercentage = (Float.parseFloat(waterLevel) /5000) * 100;
 
 
-                                        waterLevelTextView.setText(waterLevel + " L");
+                                        waterLevelTextView.setText(waterLevel + " L (" + waterLevelPercentage + "%)");
                                         flowRateTextView.setText((flowRate + " L/s"));
 
                                     boolean isOnline = statusChecker.isDeviceOnline(timestamp);
@@ -330,5 +354,33 @@ public class MainActivity extends AppCompatActivity {
     private void showToast(String message) {
         Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
     }
+    private void fetchNotifications() {
+        NotificationsInterface notificationsInterface = ApiClient.getNotificationsInterface();
+        Call<List<NotificationModel>> call = notificationsInterface.getNotifications();
+
+        call.enqueue(new Callback<List<NotificationModel>>() {
+            @Override
+            public void onResponse(Call<List<NotificationModel>> call, Response<List<NotificationModel>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<NotificationModel> notifications = response.body();
+                    // Log the notifications to check the data
+                    for (NotificationModel notification : notifications) {
+                        Log.d("Notification", "Heading: " + notification.getBoardId() + ", Message: " + notification.getText() + ", Timestamp: " + notification.getTimestamp());
+                    }
+                    adapter = new NotificationAdapter(notifications);
+                    recyclerView.setAdapter(adapter);
+                } else {
+                    Log.e("NotificationsActivity", "Error fetching notifications: " + response.message());
+                }
+            }
+
+
+            @Override
+            public void onFailure(Call<List<NotificationModel>> call, Throwable t) {
+                Log.e("NotificationsActivity", "Failure: " + t.getMessage());
+            }
+        });
+    }
+
 
 }

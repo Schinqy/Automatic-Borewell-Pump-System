@@ -73,6 +73,8 @@ public class GraphActivity extends AppCompatActivity {
         spinnerInterval = findViewById(R.id.spinnerInterval);
         btnWaterUsage = findViewById(R.id.btnWaterUsage);
         btnDisplayTable = findViewById(R.id.btnShowTable);
+        deviceStatusTextView =  findViewById(R.id.deviceStatus);
+        deviceStatusIcon =  findViewById(R.id.deviceStatusIcon);
 
         sharedPreferences = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
 
@@ -137,7 +139,7 @@ public class GraphActivity extends AppCompatActivity {
         });
 
         btnDisplayTable.setOnClickListener(v -> {
-           
+
         });
 
 
@@ -205,11 +207,13 @@ public class GraphActivity extends AppCompatActivity {
                                 xAxisLabels = new ArrayList<>();
                                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 
+                                // Handle interval from SharedPreferences
                                 int intervalPosition = sharedPreferences.getInt(PREF_INTERVAL, 0);
                                 Calendar calendar = Calendar.getInstance();
                                 calendar.set(Calendar.SECOND, 0);
                                 calendar.set(Calendar.MILLISECOND, 0);
 
+                                // Set the start date based on the selected interval
                                 switch (intervalPosition) {
                                     case 0: // Last Hour
                                         calendar.add(Calendar.HOUR, -1);
@@ -234,31 +238,63 @@ public class GraphActivity extends AppCompatActivity {
                                         calendar.set(Calendar.MINUTE, 0);
                                         break;
                                     case 5: // All
-                                        calendar.setTimeInMillis(0);
+                                        calendar.setTimeInMillis(0); // All data
                                         break;
                                 }
 
                                 Date startDate = calendar.getTime();
+                                JSONObject latestData = null;
+                                long latestTimestamp = Long.MIN_VALUE;
 
+                                // Iterate through the data array
                                 for (int i = 0; i < dataArray.length(); i++) {
                                     JSONObject data = dataArray.getJSONObject(i);
                                     String timestampStr = data.optString("timestamp");
-
                                     Date date = dateFormat.parse(timestampStr);
+
                                     if (date != null && date.after(startDate)) {
+                                        // Graph data population
                                         float value;
                                         if ("water".equals(graph_type)) {
                                             value = (float) data.optDouble("water_level", 0);
                                         } else {
                                             value = (float) data.optDouble("flow_rate", 0);
                                         }
-
                                         graphEntries.add(new Entry(graphEntries.size(), value));
                                         xAxisLabels.add(new SimpleDateFormat("MMM dd, HH:mm", Locale.getDefault()).format(date));
+
+                                        // Track latest data for online status
+                                        long timestamp = date.getTime();
+                                        if (timestamp > latestTimestamp) {
+                                            latestTimestamp = timestamp;
+                                            latestData = data;
+                                        }
                                     }
                                 }
 
+                                // Populate the graph with data
                                 populateGraph(graphEntries);
+
+                                // Check and display the device status based on the latest timestamp
+                                if (latestData != null) {
+                                    String waterLevel = latestData.optString("water_level");
+                                    String flowRate = latestData.optString("flow_rate");
+                                    String timestamp = latestData.optString("timestamp");
+
+
+                                    // Check if the device is online using the timestamp
+                                    boolean isOnline = statusChecker.isDeviceOnline(timestamp);
+
+                                    if (isOnline) {
+                                        deviceStatusTextView.setText("Device Online");
+                                        deviceStatusIcon.setImageResource(R.drawable.ic_online);
+                                    } else {
+                                        deviceStatusTextView.setText("Last Seen: " + timestamp);
+                                        deviceStatusIcon.setImageResource(R.drawable.ic_offline);
+                                    }
+                                } else {
+                                    deviceStatusTextView.setText("No data found.");
+                                }
                             } else {
                                 deviceStatusTextView.setText("No data found.");
                             }
@@ -280,6 +316,7 @@ public class GraphActivity extends AppCompatActivity {
             }
         });
     }
+
 }
 
 
